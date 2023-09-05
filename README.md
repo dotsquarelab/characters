@@ -11,7 +11,15 @@ pip install -e ".[dev,test]"
 
 ## Run the app
 
-Run the app with
+Set the OpenAI API key first:
+
+```sh
+export OPENAI_API_KEY="..."
+```
+
+Or create a `.env` file, which is loaded automatically by the app.
+
+Then run the app with:
 
 ```sh
 streamlit run app.py --server.runOnSave True
