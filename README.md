@@ -3,7 +3,13 @@
 ## Requirements
 
 Install python and set up a virtual env as usual.
-The run:
+Then run:
+
+```sh
+pip install -e .
+```
+
+If the testing and dev dependencies are also needed, then:
 
 ```sh
 pip install -e ".[dev,test]"
