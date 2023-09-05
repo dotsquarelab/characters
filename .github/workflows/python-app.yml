@@ -1,0 +1,60 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  python-tests:
+    name: Python tests
+    permissions:
+      pull-requests: "write"
+      contents: "write"
+      id-token: "write"
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.10.7]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: setup.py
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --statistics
+
+      - name: Lint with pylint
+        run: |
+          pylint src
+          pylint tests --recursive=true
+
+      - name: Run pytest
+        run: |
+          set -o pipefail
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=characters tests/ | tee pytest-coverage.txt
+
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
